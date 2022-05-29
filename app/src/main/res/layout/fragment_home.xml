@@ -47,12 +47,126 @@
                 app:layout_constraintTop_toTopOf="parent"
                 />
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/weatherLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/homeToolbar"
+            android:layout_marginStart="@dimen/size_10"
+            android:layout_marginTop="@dimen/size_20"
+            android:layout_marginEnd="@dimen/size_10"
+            android:background="@drawable/border_corner_box"
+            android:orientation="vertical"
+            android:padding="@dimen/size_10"
+            android:visibility="@{viewModel.weatherViewEnable}">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/size_10"
+                android:paddingEnd="@dimen/size_10"
+                android:visibility="@{viewModel.weatherDetailEnable}">
+
+                <LinearLayout
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/font_bold"
+                            android:text="@{viewModel.weatherDegree}"
+                            android:textColor="@color/black"
+                            android:textSize="22sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="@dimen/size_5"
+                            android:layout_marginTop="@dimen/size_5"
+                            android:fontFamily="@font/font_regular"
+                            android:text="@string/weather_degree"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/size_12" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/font_medium"
+                        android:text="@{viewModel.weatherMessage}"
+                        android:textColor="@color/gray"
+                        android:textSize="@dimen/size_14" />
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/weatherLogo"
+                    android:layout_width="50sp"
+                    android:layout_height="50sp"
+                    android:layout_gravity="center" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="@{viewModel.weatherLoaderEnable}">
+
+                <ProgressBar
+                    android:layout_width="40sp"
+                    android:layout_height="40sp"
+                    android:layout_gravity="center"
+                    android:indeterminateTint="@color/mainColor" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="@dimen/size_15"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/font_medium"
+                        android:text="@string/please_wait"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/size_16" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/size_2"
+                        android:fontFamily="@font/font_regular"
+                        android:text="@string/loading_user_weather"
+                        android:textColor="@color/hint_color"
+                        android:textSize="@dimen/size_14" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:id="@+id/mainLayout"
-            android:layout_below="@+id/homeToolbar">
+            android:layout_below="@+id/weatherLayout">
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

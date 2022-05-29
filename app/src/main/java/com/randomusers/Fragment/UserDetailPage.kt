@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
@@ -15,16 +16,18 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.randomusers.Base.BaseFragment
 import com.randomusers.R
+import com.randomusers.Utils.ApiStatus
+import com.randomusers.Utils.CommonUtil
 import com.randomusers.databinding.FragmentUserDetailBinding
 import com.randomusers.viewModel.UserDetailViewModel
 import com.randomusers.viewModelFactory.UserDetailViewModelFactory
 
 
-class UserDetailPage : BaseFragment(),View.OnClickListener {
+class UserDetailPage : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentUserDetailBinding
     private lateinit var detailViewModel: UserDetailViewModel
-    var mobileNumber:String=""
-    var emailId:String=""
+    var mobileNumber: String = ""
+    var emailId: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,7 +67,48 @@ class UserDetailPage : BaseFragment(),View.OnClickListener {
                     emailId = randomUserData.email!!
                     detailViewModel.userAddress.value =
                         randomUserData.userLocation!!.street.number + ", " + randomUserData.userLocation!!.street.name + ", " + randomUserData.userLocation!!.city + ", " + randomUserData.userLocation!!.state
+                    detailViewModel.getWeatherDetail(
+                        randomUserData.userLocation!!.coordinates.longitude,
+                        randomUserData.userLocation!!.coordinates.latitude,
+                        requireContext()
+                    )
                 }
+            }
+        })
+        detailViewModel.weatherdetail.observe(requireActivity(), Observer {
+            it?.let { apiResponse ->
+                when (apiResponse.apiStatus) {
+                    ApiStatus.SUCCESS -> {
+                        detailViewModel.weatherLoaderEnable.value=View.GONE
+                        detailViewModel.weatherDetailEnable.value=View.VISIBLE
+                        apiResponse.data?.let {
+                            val weatherDetail=apiResponse.data[0]
+                            val weatherUrl: String = CommonUtil.weatherImageUrl+weatherDetail.weather.icon+".png"
+                            if (weatherUrl!!.isNotEmpty()) {
+                                val options = RequestOptions()
+                                options.placeholder(R.drawable.ic_baseline_wb_cloudy_24)
+                                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                                    .error(R.drawable.ic_baseline_wb_cloudy_24)
+                                Glide.with(requireActivity())
+                                    .load(weatherUrl)
+                                    .apply(options)
+                                    .into(binding.weatherLogo)
+                            } else {
+                                binding.weatherLogo.setImageResource(R.drawable.ic_baseline_wb_cloudy_24)
+                            }
+                            detailViewModel.weatherMessage.value=weatherDetail.weather.description
+                            detailViewModel.weatherDegree.value=weatherDetail.temp
+                        }
+                    }
+                    ApiStatus.ERROR -> {
+
+                    }
+                    ApiStatus.LOADING -> {
+                        detailViewModel.weatherLoaderEnable.value=View.VISIBLE
+                        detailViewModel.weatherDetailEnable.value=View.GONE
+                    }
+                }
+
             }
         })
         binding.toolbarBack.setOnClickListener(this)
@@ -77,10 +121,13 @@ class UserDetailPage : BaseFragment(),View.OnClickListener {
     override fun onDestroy() {
         super.onDestroy()
         requireActivity().viewModelStore.clear()
+        if(detailViewModel.callWeatherApi!=null){
+            detailViewModel.callWeatherApi!!.cancel()
+        }
     }
 
     override fun onClick(v: View?) {
-        when(v?.id) {
+        when (v?.id) {
             R.id.toolbarBack -> {
                 requireActivity().onBackPressed()
             }
@@ -93,10 +140,11 @@ class UserDetailPage : BaseFragment(),View.OnClickListener {
             }
             R.id.callButton -> {
                 val intent = Intent(Intent.ACTION_DIAL)
-                intent.data = Uri.parse("tel:"+mobileNumber)
+                intent.data = Uri.parse("tel:" + mobileNumber)
                 startActivity(intent)
             }
         }
     }
+
 
 }
