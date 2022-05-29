@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Random Users</string>
+    <string name="search_user">Search User</string>
+    <string name="no_data_found">No Data Found.</string>
+    <string name="please_try_again">Please Try Again.</string>
+    <string name="user_detail_label">User Detail</string>
+    <string name="email">Email</string>
+    <string name="mobile">Mobile</string>
+    <string name="address">Address</string>
+</resources>
